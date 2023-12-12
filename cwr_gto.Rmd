@@ -1,0 +1,121 @@
+---
+title: "WildRelatives_Gto"
+author: "Idalia Rojas"
+date: "11/28/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gtsummary)
+library(tidyverse)
+library(wesanderson)
+#install.packages("wesanderson")
+
+```
+
+## Plot genus and features of crop wild relatives in Guanajuato
+
+Loada data
+
+```{r enciclovia}
+
+cwr <- read.delim("../data/2023-11-27_12-01-58-626_taxa_EncicloVida.txt",
+                  stringsAsFactors = F, header = T, sep = "\t")
+
+head(cwr)
+colnames(cwr)
+```
+
+## Check Families and Genus distributed
+
+
+
+```{r familias}
+ 
+
+ df <- cwr %>% 
+  select(Familia)%>%
+   tbl_summary() %>% 
+   as_gt
+gt::gtsave(df, filename = "Familia.docx", path = "../data/")
+
+
+sum.fam <- as.data.frame(summary(as.factor(cwr$Familia)))
+colnames(sum.fam) <- "N"
+sum.fam$Familia <- rownames(sum.fam)
+sum.fam$Percent <- (sum.fam$N / nrow(cwr))*100
+sum.fam <- sum.fam[order(sum.fam$Percent),]
+order <- row.names(sum.fam  )
+sum.fam$Familia <- factor(sum.fam$Familia, levels = order)
+
+ wes_palette("AsteroidCity1")
+
+ fam.plot  <- ggplot(sum.fam, aes(Percent,Familia))+
+  geom_col(fill = "cyan4", )+
+   theme_classic()+
+   theme(text = element_text(size=12))
+ fam.plot
+ 
+ ggsave(filename = "../plots/fam.png",fam.plot, width = 5, height = 8,
+        units = "in", dpi = 1200)
+
+
+```
+
+```{r genero}
+
+genero <- cwr %>% 
+  select(Género)%>%
+   tbl_summary() %>% 
+   as_gt
+gt::gtsave(genero, filename = "genero.docx", path = "../data/")
+
+sum.genus <- as.data.frame(summary(as.factor(cwr$Género)))
+colnames(sum.genus) <- "N"
+sum.genus$Género <- rownames(sum.genus)
+sum.genus$Percent <- (sum.genus$N / nrow(cwr))*100
+sum.genus <- sum.genus[order(sum.genus$Percent),]
+order <- row.names(sum.genus  )
+sum.genus$Género <- factor(sum.genus$Género, levels = order)
+
+ wes_palette("AsteroidCity1")
+
+ genus.plot  <- ggplot(sum.genus, aes(Percent,Género))+
+  geom_col(fill = "darksalmon", )+
+  theme_classic()+
+   theme(text = element_text(size=12))
+ genus.plot
+ 
+ ggsave(filename = "../plots/genus.png",genus.plot, width = 5, height = 8,
+        units = "in", dpi = 1200)
+
+```
+## Especies
+
+Plot species
+
+```{r especie}
+
+especie <- cwr %>% 
+  select(Especie, Numero.de.registros) 
+  
+colnames(especie)
+especie <- especie[order(-especie$Numero.de.registros),]
+
+especie <- especie[c(1:20),]
+
+ wes_palette("AsteroidCity1")
+
+ spp.plot  <- ggplot(especie, aes(Numero.de.registros, Especie))+
+  geom_col(fill = "darkgoldenrod3", )+
+  theme_classic()+
+   theme(text = element_text(size=12))+
+   ylab("Especie")+
+   xlab("Número de registros")
+ spp.plot
+ 
+ ggsave(filename = "../plots/spp.png",spp.plot, width = 5, height = 8,
+        units = "in", dpi = 1200)
+
+```
