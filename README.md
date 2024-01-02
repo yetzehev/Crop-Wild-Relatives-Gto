@@ -1,1 +1,1 @@
-This repository contains the data and scripts to  survey crop wild relatives (CWR) in GUanajuato.
+This repository contains the data and scripts to  survey crop wild relatives (CWR) in Guanajuato. Data was retrieved from https://enciclovida.mx/ using the  category "Filtros adicionales" > "Parientes silvestres de cultivos"
